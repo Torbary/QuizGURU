@@ -1,1 +1,1 @@
-# QuizGURU
+QuizGURU
