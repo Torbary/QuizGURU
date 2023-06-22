@@ -14,6 +14,11 @@ class Storage:
     __engine = None
     __session = None
 
+    def __new__(self, *args, **kwargs):
+        if not self:
+            self.__init__(*args, **kwargs)
+        return self
+
     def __init__(self):
         """
         initialize the db storage
