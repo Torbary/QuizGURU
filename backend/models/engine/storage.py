@@ -19,7 +19,7 @@ class Storage:
         initialize the db storage
         """
         self.__engine = create_engine(
-            'sqlite://test_db.sqlite',
+            'sqlite:///test_db.sqlite',
             pool_pre_ping=True
         )
         self.reload()
@@ -50,14 +50,14 @@ class Storage:
         """
         create a new object
         """
-        if obj is not None:
+        if object is not None:
             self.__session.add(object)
 
     def delete(self, object):
         """
         remove an object from the db session
         """
-        if obj is not None:
+        if object is not None:
             self.__session.remove(object)
 
     def close(self):
