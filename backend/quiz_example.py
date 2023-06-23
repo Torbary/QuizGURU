@@ -3,6 +3,7 @@ import json
 from models.quiz import Quiz
 from models.question import Question
 from models.user import User
+import sys
 
 
 def create_quiz(quiz=None):
@@ -31,8 +32,10 @@ def creation_questions(questions, quiz_id):
 	return question_models
 
 if __name__ == '__main__':
-
-	with open("example.json", "r") as file:
+	filename = sys.argv[1]
+	if not filename:
+		filename = 'example.json'
+	with open(filename, "r") as file:
 		data = json.load(file)
 
 	data = data.get('quiz')
