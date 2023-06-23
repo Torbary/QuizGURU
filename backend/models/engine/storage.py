@@ -70,6 +70,22 @@ class Storage:
         if object is not None:
             self.__session.delete(object)
 
+    def all(self, cls):
+        """
+        query all model of type cls
+        """
+        if not issubclass(cls, BaseModel):
+            """
+            avoid fetching a data that's derived of BaseModel
+            """
+            return None
+        try:   
+            models = self.__session.query(cls).all()
+            return models
+        except SQLAlchemyError as e:
+            print(e)
+            return None
+
     def close(self):
         '''
         close the database storage
