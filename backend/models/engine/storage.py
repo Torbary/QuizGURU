@@ -17,7 +17,6 @@ class Storage:
     _instance = None
 
     def __new__(self, *args, **kwargs):
-        print("new is called")
         if not self._instance:
             self._instance = super().__new__(self)
             self._instance.__engine = create_engine(
@@ -76,7 +75,7 @@ class Storage:
         """
         if not issubclass(cls, BaseModel):
             """
-            avoid fetching a data that's derived of BaseModel
+            avoid fetching a data that's not derived from BaseModel
             """
             return None
         try:   
@@ -91,3 +90,14 @@ class Storage:
         close the database storage
         '''
         self.__session.close()
+
+    def drop(self):
+        """
+        drops all tables in the database
+        """
+        Base.metadata.drop_all(bind=self.__engine)
+        '''
+        reloads the database, so new tables
+        can be created
+        '''
+        self.reload()
