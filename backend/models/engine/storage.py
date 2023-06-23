@@ -11,13 +11,14 @@ class Storage:
     '''
     manages storage of the app model in a database
     '''
+    _instance = None
     __engine = None
     __session = None
 
     def __new__(self, *args, **kwargs):
-        if not self:
-            self.__init__(*args, **kwargs)
-        return self
+        if not self._instance:
+            self._instance = super().__new__(self, *args, **kwargs)
+        return self._instance
 
     def __init__(self):
         """
@@ -39,6 +40,7 @@ class Storage:
         except SQLAlchemyError:
             '''ensure the database is still in a consistent state'''
             self.__session.rollback()
+            print("ERR: rolling back commit")
             pass
 
     def reload(self):
@@ -63,7 +65,7 @@ class Storage:
         remove an object from the db session
         """
         if object is not None:
-            self.__session.remove(object)
+            self.__session.delete(object)
 
     def close(self):
         '''
