@@ -4,8 +4,9 @@ contains test-cases for models.base_model
 '''
 import re
 from models.base_model import BaseModel, Base
-from models import storage
+from models import Storage
 import unittest
+import os
 
 
 def check_uuid(string):
@@ -27,11 +28,16 @@ class TestBaseModel(BaseModel, Base):
 
 
 class test_BaseModel(unittest.TestCase):
+    def setUp(self):
+        self.storage = Storage()
+        self.storage.drop()
+
+    def tearDown(self):
+        self.storage.drop()
+
     def test_attributes(self):
-        storage.drop()
         model = TestBaseModel()
         model2 = TestBaseModel()
         self.assertTrue(check_uuid(model.id))
         self.assertTrue(check_uuid(model2.id))
         self.assertNotEqual(model.id, model2.id)
-        storage.drop()

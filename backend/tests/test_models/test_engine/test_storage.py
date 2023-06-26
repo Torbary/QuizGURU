@@ -17,6 +17,7 @@ class test_Storage(unittest.TestCase):
 
     def tearDown(self):
         self.storage.drop()
+        
 
     def test_singleton(self):
         storage1 = Storage()
