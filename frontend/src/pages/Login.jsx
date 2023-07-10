@@ -30,7 +30,7 @@ export default function Login() {
         >
           Log In
         </button>
-        <p className="mt-4 text-base mx-auto">
+        <p className="mt-4 text-center text-base mx-auto">
           Don't have an account?{" "}
           <a
             href="/register"
