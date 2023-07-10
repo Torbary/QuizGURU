@@ -1,19 +1,16 @@
 import { useState } from "react";
 import "./App.css";
 import Quiz from "./Quiz";
-import shortid from "shortid";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
 function App() {
-  const [count, setCount] = useState(0);
-
-  const id = shortid.generate();
-
   const html = document.querySelector('html')
-  html.classList.add('dark')
+  html.classList.add('light')
 
 
   return (
     <>
-     <Quiz />
+     <Login />
     </>
   );
 }
