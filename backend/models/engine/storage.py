@@ -8,6 +8,7 @@ from models.quiz import Quiz
 from models.answer import Answer
 from models.question import Question
 from models.score import Score
+from functools import wraps
 
 
 class Storage:
@@ -84,6 +85,19 @@ class Storage:
         except SQLAlchemyError as e:
             print(e)
             return None
+        
+    def get(self, cls, id):
+        """
+        query a specific model of type cls
+        """
+        if not issubclass(cls, BaseModel):
+            return None
+        try:
+            model = self.__session.query(cls).filter_by(id=id).first()
+            return model
+        except SQLAlchemyError as e:
+            print(e)
+            return None
 
     def close(self):
         '''
@@ -101,3 +115,14 @@ class Storage:
         can be created
         '''
         self.reload()
+
+    def with_session(self, func):
+        """
+        decorator to pass the storage session
+        to a function.
+        """
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            result = func(self.__session, *args, **kwargs)
+            return result
+        return wrapper
