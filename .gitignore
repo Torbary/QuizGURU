@@ -132,8 +132,11 @@ dist
 
 # python
 __pycache__
+<<<<<<< HEAD
 
 # others
 .vscode
 .vite
 *.sqlite
+=======
+>>>>>>> a70e68b (Create .gitignore (#3))
