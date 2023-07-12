@@ -5,36 +5,27 @@ Quiz Controller method.
 """
 from models import storage
 from models.quiz import Quiz
-from controllers.question import get_question
+from controllers.question import fetch_questions, post_questions
 from sqlalchemy.orm import scoped_session, load_only
 
 
-@storage.with_session
-def get_quiz(session: scoped_session, id):
+def get_quiz(id):
     """
     fetch and properly format the quiz data.
     """
     quiz : Quiz = storage.get(Quiz, id)
     if not quiz:
         return None
-    data = {
-        "questions": []
-    }
-    keys = ('title', 'description', 'updated_at',
-            'created_at', 'id', 'duration')
-    for k, v in quiz.__dict__.items():
-        if k in keys:
-            data.update({k: v})
-    for question in quiz.questions:
-        question = get_question(question.id)
-        data["questions"].append(question)
-    if "duration" not in data.keys():
+    result = quiz.to_dict()
+    
+    result["questions"] = fetch_questions(quiz.id)
+    if "duration" not in result.keys():
         # 5 minutes
-        data["duration"] = 10 * 60 * 1000
-    return data
+        result["duration"] = 10 * 60 * 1000
+    return result
 
 @storage.with_session
-def fetch_quizzes(session: scoped_session, page_size = 50, page_no = 1, full_fetch=False):
+def fetch_quizzes(session: scoped_session, page_size = 50, page_no = 1):
     """
     retrieves the quizzes based on a specified pagination
     page size can be 25, 50, 100
@@ -48,8 +39,36 @@ def fetch_quizzes(session: scoped_session, page_size = 50, page_no = 1, full_fet
         .order_by(Quiz.id, Quiz.created_at)\
         .limit(page_size)\
         .offset(offset)
-    if not full_fetch:
-        query = query.options(load_only(Quiz.id, Quiz.created_at,
-                            Quiz.updated_at, Quiz.description, Quiz.title))
-    return query.all()
+    query = query.options(load_only(Quiz.id, Quiz.created_at,
+                        Quiz.updated_at, Quiz.description, Quiz.title))
+    result = query.all()
+    result = [model.to_dict() for model in result]
+    return result
+
+def post_quiz(data: dict):
+    """
+    handler for quiz creation.
+    """
+    keys = data.keys()
+    required = ("questions", "description", "title")
+
+    if not all(key in keys for key in required):
+        return False
+    
+    data.pop("id", None)
+    data.pop("created_at", None)
+    data.pop("updated_at", None)
+
+    questions = data.pop('questions')
+    quiz = Quiz(**data)
+    quiz.save()
+
+
+    cond = post_questions(questions, quiz.id)
+    if not cond:
+        storage.delete(quiz.id)
+        storage.save()
+        return None
+    else:
+        return quiz.id
 
