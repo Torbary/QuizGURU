@@ -44,3 +44,18 @@ class BaseModel:
         self.updated_at = datetime.now()
         storage.new(self)
         storage.save()
+
+    def to_dict(self, include_password=False):
+        """returns a dictionary containing all keys/values of the instance"""
+        time = "%Y-%m-%dT%H:%M:%S.%f"
+        new_dict = self.__dict__.copy()
+        if "created_at" in new_dict:
+            new_dict["created_at"] = new_dict["created_at"].strftime(time)
+        if "updated_at" in new_dict:
+            new_dict["updated_at"] = new_dict["updated_at"].strftime(time)
+        new_dict["__class__"] = self.__class__.__name__
+        if "_sa_instance_state" in new_dict:
+            del new_dict["_sa_instance_state"]
+        if not include_password and "password" in new_dict:
+            new_dict.pop("password", None)
+        return new_dict
