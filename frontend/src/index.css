@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply bg-[#F5F5F5] text-gray-900
+    dark:bg-[#0A1C2E] dark:text-white;
+}
