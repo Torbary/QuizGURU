@@ -30,9 +30,15 @@ def fetch_quizzes(session: scoped_session, page_size = 50, page_no = 1):
     retrieves the quizzes based on a specified pagination
     page size can be 25, 50, 100
     """
+    try:
+        page_size = int(page_size)
+        page_no = int(page_no)
+    except ValueError as e:
+        return e.__str__()
     if page_size not in (25, 50, 100):
-        page_size = 50
-    if page_no <= 0:
+        page_size = 25
+        page_no = 1
+    elif page_no <= 0:
         page_no = 1
     offset = (page_no - 1) * page_size
     query = session.query(Quiz)\
