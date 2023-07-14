@@ -15,3 +15,8 @@ class Answer(BaseModel, Base):
 	answer = Column(Integer, nullable=False)
 	quiz_id = Column(String(60), ForeignKey('quizzes.id'))
 	score_id = Column(String(60), ForeignKey('scores.id'))
+	"""
+	score: Score.
+	this attribute implicitly exists due to the relationship between
+	Score  and Answer table. refer to "Score.answers" column as reference.
+	"""

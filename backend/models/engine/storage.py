@@ -2,6 +2,7 @@
 '''this module defines a class to manage storage to a database'''
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.exc import SQLAlchemyError
 from models.base_model import Base, BaseModel
 from models.user import User
 from models.quiz import Quiz
