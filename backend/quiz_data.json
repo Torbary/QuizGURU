@@ -1,0 +1,21 @@
+{
+	"quiz": {
+		"title": "Basic Quiz",
+		"description": "",
+		"questions": [
+			{
+				"question": "Who is considered the first programmer?",
+				"options": ["Alan Turing", "Ada Lovelace", "Charles Babbage", "Julien Barbier"],
+				"correct": 1,
+				"hint": "It was a lady.",
+				"point": 1
+			},
+			{
+				"question": "Which is an interpreted programming language?",
+				"options": ["Ruby", "Python", "C", "Java"],
+				"correct": 1,
+				"point": 1
+			}
+		]
+	}
+}
