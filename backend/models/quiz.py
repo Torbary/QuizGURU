@@ -4,7 +4,7 @@ quiz model
 """
 
 from datetime import datetime
-from sqlalchemy import Column, String, Text, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Table
 from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
 from models.question import Question
@@ -17,6 +17,9 @@ class Quiz(BaseModel, Base):
     __tablename__ = 'quizzes'
     description = Column(Text)
     title = Column(String(256), nullable=False)
+    owner_id = Column(String(60), ForeignKey('users.id'))
+    # duration in minutes.
+    duration = Column(Integer, default=10, nullable=False)
     questions = relationship('Question', backref='quiz',
         cascade='all, delete-orphan')
 
