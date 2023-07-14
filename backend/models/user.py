@@ -18,6 +18,8 @@ class User(BaseModel, Base):
     email = Column(String(128), unique=True, nullable=False)
     lastname = Column(String(128), nullable=False)
     firstname = Column(String(128), nullable=False)
-    role = Column(String(128), default="student")
+    # types of role: user, admin
+    type = Column(String(60), default="user")
+    password = Column(String(128), nullable=False)
     quizzes = relationship('Quiz', secondary='user_quiz')
     scores = relationship('Score', backref='user')
