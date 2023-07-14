@@ -55,11 +55,6 @@ def post_quiz(data: dict):
     """
     handler for quiz creation.
     """
-    keys = data.keys()
-    required = ("questions", "description", "title")
-
-    if not all(key in keys for key in required):
-        return False
     
     data.pop("id", None)
     data.pop("created_at", None)
@@ -69,12 +64,11 @@ def post_quiz(data: dict):
     quiz = Quiz(**data)
     quiz.save()
 
-
     cond = post_questions(questions, quiz.id)
     if not cond:
         storage.delete(quiz.id)
         storage.save()
-        return None
+        return False
     else:
-        return quiz.id
+        return True
 
