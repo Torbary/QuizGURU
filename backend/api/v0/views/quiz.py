@@ -1,7 +1,7 @@
 from ..views import app_views
-from controllers.quiz import get_quiz, fetch_quizzes, post_quiz
+from controllers.quiz import get_quiz, fetch_quizzes, post_quiz, delete_quiz
 from controllers.question import fetch_questions
-from flask import jsonify, request
+from flask import jsonify, request, abort
 from validators.quiz import QuizForm
 
 
@@ -34,13 +34,7 @@ def quiz_post():
     data = request.get_json()
     quiz_form: QuizForm = QuizForm(data=data)
     if not quiz_form.validate():
-        errors = {
-            "message": "invalid quiz data",
-            "status_code": 400,
-            "errors": {
-
-            }
-        }
+        errors = {"message": "invalid quiz data", "status_code": 400, "errors": {}}
         for k, v in quiz_form.errors.items():
             if type(v) is list:
                 errors["errors"][k] = " ".join(v)
@@ -50,3 +44,19 @@ def quiz_post():
         return jsonify({"message": "invalid quiz data"}), 400
     else:
         return jsonify({"message": "created"}), 201
+
+
+@app_views.route("/quizzes/<quiz_id>", methods=["DELETE"])
+def quiz_delete(quiz_id):
+    deleted = delete_quiz(quiz_id)
+    if deleted:
+        return jsonify({}), 204
+    else:
+        return (
+            jsonify(
+                {
+                    "message": "cannot delete the quiz referenced by the provided id, as it does not exist"
+                }
+            ),
+            404,
+        )
