@@ -15,6 +15,7 @@ class BaseModel:
     """Base Model"""
 
     id = Column(String(60), unique=True, nullable=False, primary_key=True)
+    shortid = Column(String(60), unique=True, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
@@ -23,6 +24,7 @@ class BaseModel:
         instantiates a new model
         """
         self.id = str(uuid4())
+        self.shortid = str(self.id.split(' ')[0])
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         if not kwargs:
@@ -53,7 +55,6 @@ class BaseModel:
             new_dict["created_at"] = new_dict["created_at"].strftime(time)
         if "updated_at" in new_dict:
             new_dict["updated_at"] = new_dict["updated_at"].strftime(time)
-        new_dict["__class__"] = self.__class__.__name__
         if "_sa_instance_state" in new_dict:
             del new_dict["_sa_instance_state"]
         if not include_password and "password" in new_dict:
