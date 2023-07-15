@@ -7,6 +7,7 @@ from models import storage
 from models.quiz import Quiz
 from controllers.question import fetch_questions, post_questions
 from sqlalchemy.orm import scoped_session, load_only
+from validators.quiz import QuizForm
 
 
 def get_quiz(id):
@@ -58,10 +59,15 @@ def fetch_quizzes(session: scoped_session, page_size=50, page_no=1):
     return result
 
 
-def post_quiz(data: dict):
+def post_quiz(data: dict) -> tuple[QuizForm, bool]:
     """
     handler for quiz creation.
     """
+
+    form : QuizForm = QuizForm(data=data)
+    
+    if not form.validate():
+        return form, False
 
     data.pop("id", None)
     data.pop("created_at", None)
@@ -74,9 +80,9 @@ def post_quiz(data: dict):
     if not cond:
         storage.delete(quiz.id)
         storage.save()
-        return False
+        return form, False
     else:
-        return True
+        return form, True
 
 
 def delete_quiz(quiz_id):

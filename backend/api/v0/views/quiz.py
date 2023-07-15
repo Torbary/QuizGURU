@@ -32,18 +32,23 @@ def quiz_question_gets(quiz_id):
 @app_views.route("/quizzes", methods=["POST"])
 def quiz_post():
     data = request.get_json()
-    quiz_form: QuizForm = QuizForm(data=data)
-    if not quiz_form.validate():
-        errors = {"message": "invalid quiz data", "status_code": 400, "errors": {}}
-        for k, v in quiz_form.errors.items():
-            if type(v) is list:
-                errors["errors"][k] = " ".join(v)
-        return jsonify(errors), 400
-    created = post_quiz(data)
-    if not created:
-        return jsonify({"message": "invalid quiz data"}), 400
+    resp_data = {}
+    status_code = None
+    form, created = post_quiz(data)
+    if created:
+        resp_data = {"message": "created"}
+        status_code = 201
+    elif not created and len(form.errors) != 0:
+        resp_data = {
+            "message": "invalid quiz data",
+            "status_code": 400,
+            "errors": form.errors,
+        }
+        status_code = 400
     else:
-        return jsonify({"message": "created"}), 201
+        resp_data = {"message": "invalid quiz data", "status_code": 400}
+        status_code = 400
+    return jsonify(resp_data), status_code
 
 
 @app_views.route("/quizzes/<quiz_id>", methods=["DELETE"])
