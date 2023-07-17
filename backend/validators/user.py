@@ -20,3 +20,15 @@ class UserForm(Form):
     password = StringField("Password", validators=[
         DataRequired(), Length(min=8, max=36), Regexp(regex=r'(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,}$')
     ])
+
+class LoginForm(Form):
+    """
+    represents a form used for validating and processing login data.
+    """
+    email = StringField("Email", validators=[
+        DataRequired(), Email()
+    ])
+
+    password = StringField("Password", validators=[
+        DataRequired(), Length(min=8, max=36), Regexp(regex=r'(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,}$')
+    ])
