@@ -1,8 +1,7 @@
 from ..views import app_views
 from controllers.quiz import get_quiz, fetch_quizzes, post_quiz, delete_quiz
 from controllers.question import fetch_questions
-from flask import jsonify, request, abort
-from validators.quiz import QuizForm
+from flask import jsonify, request
 
 
 @app_views.route("/quizzes/")

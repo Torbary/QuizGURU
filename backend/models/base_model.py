@@ -24,7 +24,7 @@ class BaseModel:
         instantiates a new model
         """
         self.id = str(uuid4())
-        self.shortid = str(self.id.split(' ')[0])
+        self.shortid = str(self.id.split('-')[0])
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         if not kwargs:
