@@ -1,7 +1,7 @@
 from functools import wraps
-from ..views import app_views
+from .. import app_views
 from flask import jsonify, request, abort, session
-from controllers.user import create_account, is_auth, login_account
+from controllers.auth import create_account, is_auth, login_account
 
 
 def auth_required(func):
@@ -18,7 +18,6 @@ def auth_required(func):
         if "user_id" not in session:
             return jsonify({"message": "user not authenticated"}), 401
         elif is_auth(session["user_id"]):
-            print("authenticated")
             return func(*args, **kwargs)
         else:
             return jsonify({"message": "user not authenticated"}), 401
