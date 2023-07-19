@@ -21,14 +21,14 @@ def auth_required(func):
             return func(*args, **kwargs)
         else:
             return jsonify({"message": "user not authenticated"}), 401
+
     return decorated_func
 
 
 @app_views.route("/register", methods=["POST"])
 def account_create():
     form_data = request.get_json()
-    err, _ = create_account(form_data)
-    status = err["status"]
+    err, status, _ = create_account(form_data)
     return jsonify(err), status
 
 
@@ -38,10 +38,12 @@ def user_get(user_id):
     name = "Welcome!"
     return f"{name}", 200
 
+
 @app_views.route("/users/<user_id>", methods=["DELETE"])
 @auth_required
 def account_delete(user_id):
     return "User deletion Endpoint"
+
 
 @app_views.route("/users/password", methods=["PUT"])
 @auth_required
