@@ -24,6 +24,11 @@ def closeDB(arg):
     storage.close()
 
 
+@app.get("/status")
+def app_status():
+    return "Alive!", 200
+
+
 if __name__ == "__main__":
     host = "0.0.0.0"
     port = "5500"
