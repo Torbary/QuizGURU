@@ -1,83 +1,59 @@
-"""
-this module contains function for user management.
-the return value of these functions looks like this:
-    message, http status, dict/json object, boolean
-"""
-from functools import lru_cache
 from models import storage
 from models.user import User
-from validators.user import UserForm, LoginForm
+from models.quiz import Quiz
+from models.score import Score
 from sqlalchemy.orm import scoped_session, load_only
-
-'''TODO
-this is a memoization type of cache.
-it's purpose is to reduce checking for "user_id" if it been seen already.
-it's not a special thing... I'm talking about the "@lru_cache" decorator btw...
-it's literally nothing though...
-'''
-@lru_cache(maxsize=20)
-def is_auth(user_id):
-    user = storage.get(User, user_id)
-    return True if user else False
+from .score import calculate_score
 
 
 @storage.with_session
-def create_account(session, data):
-    """
-    this function manages the creation of a user.
-    the status code returned are as follows:
-    * 400 - This returned when the data passed is invalid to create an account.
-        a dict object containing information of the invalidation is returned as the error message.
-    * 409 - Indicates there's a conflict because an account exists with the provided credential.
-    * 201 - Indicates success as a new account is created.
-    """
-    form: UserForm = UserForm(data=data)
-
-    if not form.validate():
-        return form.errors, 400, False
-    else:
-        user: User | None = session.query(User).filter_by(email=data["email"]).first()
-        if user:
-            return (
-                "an account exists with the provided credential",
-                409,
-                False,
+def fetch_user_quizzes(session: scoped_session, user_id):
+    query = (
+        session.query(Quiz)
+        .join(User.quizzes)
+        .filter(User.id == user_id)
+        .options(
+            load_only(
+                Quiz.id, Quiz.created_at, Quiz.updated_at, Quiz.description, Quiz.title
             )
-        user = User(**data)
-        user.save()
-        return "Successful", 201, True
-
-
-@storage.with_session
-def login_account(session: scoped_session, data):
-    """
-    this function logs the a user in, based on their credential.
-    a 400 status code is returned due to invalid form submission.
-    a 401 code is returned because the credentials provided are wrong.
-    a 200 code indicating the account is logged in successfully.
-    """
-    form: LoginForm = LoginForm(data=data)
-
-    # validate form
-    if not form.validate():
-        if form.errors.get("email"):
-            field = "email"
-            err_msg = "Please enter a valid email address."
-        elif form.errors.get("password"):
-            field = "password"
-            err_msg = "password must contain at least one Uppercase, one number and one non-alphanumeric digit."
-
-        return err_msg, 400, {field: err_msg}, False
-
-    user = (
-        session.query(User)
-        .options(load_only(User.email, User.firstname, User.lastname, User.type))
-        .filter_by(email=data["email"])
-        .first()
+        )
     )
+
+    quizzes = query.all()
+    quizzes = [quiz.to_dict() for quiz in quizzes]
+    return quizzes
+
+
+def add_quiz_to_user(user_id, quiz_id):
+    quiz = storage.get(Quiz, quiz_id)
+    if not quiz:
+        return False
+
+    user: User = storage.get(User, user_id)
     if not user:
-        return "user does not exist", 401, {"email": "user does not exist"}, False
-    elif user.password != data["password"]:
-        return "invalid credential", 401, {"password": "invalid credential"}, False
-    else:
-        return "valid credentials", 200, user.to_dict(), True
+        return False
+
+    user.quizzes.append(quiz)
+    user.save()
+    return True
+
+
+def update_user_score(user_id, score: Score):
+    if not score:
+        return False
+    user: User = storage.get(User, user_id)
+    if not user:
+        return False
+
+    # calculate score
+    total_score = calculate_score(score)
+
+    if not total_score:
+        return False
+    score.score = total_score
+    score.save()
+
+    user.scores.append(score)
+    user.save()
+
+    return True
