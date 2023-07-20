@@ -1,16 +1,9 @@
 import React from "react";
-function NavigationContainer({ length, index, setIndex }) {
+import { useQuizStore } from "../store/quiz";
+function NavigationContainer() {
+  const { index, setIndex, questions } = useQuizStore();
+  const length = questions.length;
 
-    const handleNext = () => {
-        setIndex((currentIndex) => {
-            return currentIndex + 1 == length ? currentIndex : currentIndex + 1
-        })
-    }
-    const handlePrevious = () => {
-        setIndex((currentIndex) => {
-            return currentIndex - 1 < 0 ? 0 : currentIndex - 1
-        })
-    }
   return (
     <div className="flex justify-between items-center mt-10">
       <div className="flex gap-1">
@@ -20,7 +13,7 @@ function NavigationContainer({ length, index, setIndex }) {
           transition px-3 py-2 rounded cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed
           "
           disabled={index === 0 ? true : false}
-          onClick={handlePrevious}
+          onClick={() => setIndex(index - 1 < 0 ? 0 : index - 1)}
         >
           Previous
         </button>
@@ -30,7 +23,7 @@ function NavigationContainer({ length, index, setIndex }) {
           transition px-4 py-2 rounded cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed
           "
           disabled={index === length - 1 ? true : false}
-          onClick={handleNext}
+          onClick={() => setIndex(index + 1 == length ? index : index + 1)}
         >
           Next
         </button>

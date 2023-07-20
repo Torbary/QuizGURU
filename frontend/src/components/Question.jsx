@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useQuizStore } from "../store/quiz";
 
 function QuestionOption({ id, value, checked, onChange }) {
   return (
@@ -14,8 +15,10 @@ function QuestionOption({ id, value, checked, onChange }) {
         />
         <label
           htmlFor={id}
-          className=" block mt-2 text-gray-900 dark:text-white font-semibold border-2 border-gray-900 dark:border-white hover:bg-sky-700 p-2 rounded-lg
-        cursor-pointer peer-checked:bg-sky-800"
+          className="block mt-2 text-gray-900 dark:text-white font-semibold
+          border-2 border-gray-900 dark:border-white hover:bg-sky-700 p-2
+          rounded-lg cursor-pointer peer-checked:bg-sky-800
+          "
         >
           {value}
         </label>
@@ -24,26 +27,33 @@ function QuestionOption({ id, value, checked, onChange }) {
   );
 }
 
-function Question({ question, selectedOption, onOptionChange }) {
+function Question() {
+  const { questions, index, selectedOptions, setSelectedOptions } =
+    useQuizStore();
+  const onOptionChange = (optionId) => {
+    setSelectedOptions(index, optionId);
+  };
   return (
     <>
       <form className="">
-        <p className="mt-4 pb-4 text-2xl mx-auto">{question.question}</p>
-        {question.hint ? (
+        <p className="mt-4 pb-4 text-2xl mx-auto">
+          {questions[index].question}
+        </p>
+        {questions[index].hint ? (
           <p className="text-lg font-sans">
             <span className="font-bold text-red-500">Hint:</span>{" "}
             {question.hint}
           </p>
         ) : null}
         <ul>
-          {question.options.map((value, index) => {
-            const optionId = `option_${index}`;
+          {questions[index].options.map((value, _index) => {
+            const optionId = `option_${_index}`;
             return (
               <QuestionOption
                 id={optionId}
                 key={optionId}
                 value={value}
-                checked={selectedOption === optionId}
+                checked={selectedOptions[index] === optionId}
                 onChange={() => onOptionChange(optionId)}
               />
             );

@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Question from "../components/Question";
 import NavigationContainer from "../components/NavigationContainer";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuizStore } from "../store/quiz";
+import ErrorPage from "./error-page";
 
 // const questions = [
 //   {
@@ -28,36 +30,37 @@ import { useParams } from "react-router-dom";
 //   },
 // ];
 
-function Quiz() {
+export default function Quiz() {
   const params = useParams();
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-  const [selectedOptions, setSelectedOptions] = React.useState({});
-  const [questions, setQuestions] = React.useState([]);
+  const navigate = useNavigate();
+  const { index, questions, setQuestions, selectedOptions } = useQuizStore();
+  const [valid, setValid] = useState(true);
 
   React.useEffect(() => {
-    const url = `${import.meta.env.VITE_API_URL}/quizzes/${
-      params.quizId
-    }/questions`;
-    const fetchQuestions = async () => {
-      const response = await fetch(url, {
-        method: "GET",
-      });
+    console.log(selectedOptions);
+  }, [selectedOptions]);
 
-      if (response.ok) {
-        const data = await response.json();
-        setQuestions([...data]);
+  React.useEffect(() => {
+    const url = `${import.meta.env.VITE_API_URL}/quizzes/${params.quizId}`;
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setQuestions(data.questions);
+        } else {
+          setValid(false);
+        }
+      } catch (err) {
+        navigate("/");
       }
     };
 
     fetchQuestions();
   }, []);
-
-  const handleOptionChange = (questionIndex, optionId) => {
-    setSelectedOptions((prevSelectedOptions) => ({
-      ...prevSelectedOptions,
-      [questionIndex]: optionId,
-    }));
-  };
 
   const handleToggle = (e) => {
     e.preventDefault();
@@ -65,7 +68,7 @@ function Quiz() {
     htmlElement.classList.toggle("dark");
   };
 
-  return (
+  const quiz = (
     <>
       <div className="max-w-[600px] mx-auto px-4 min-w-[320px] pt-4">
         <div>
@@ -78,32 +81,16 @@ function Quiz() {
         </div>
         <div>
           <h1 className="text-2xl mt-5 text-red-600 dark:text-lime-400">
-            Question {currentIndex + 1}
+            Question {index + 1}
           </h1>
           <p className="text-lg font-semibold">
-            {currentIndex + 1} of {questions.length} questions
+            {index + 1} of {questions.length} questions
           </p>
         </div>
-        {questions.length !== 0 ? (
-          <Question
-            question={questions[currentIndex]}
-            key={questions[currentIndex]?.id}
-            onOptionChange={(optionId) =>
-              handleOptionChange(currentIndex, optionId)
-            }
-            selectedOption={selectedOptions[currentIndex] || ""}
-          />
-        ) : (
-          ""
-        )}
-        <NavigationContainer
-          length={questions.length}
-          index={currentIndex}
-          setIndex={setCurrentIndex}
-        />
+        {questions.length !== 0 ? <Question key={questions[index]?.id} /> : ""}
+        <NavigationContainer />
       </div>
     </>
   );
+  return valid ? quiz : <ErrorPage />;
 }
-
-export default Quiz;
