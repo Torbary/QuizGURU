@@ -16,6 +16,7 @@ export default function DivInput(props) {
         id={props?.id}
         onChange={props?.onChange}
         placeholder={props?.placeholder}
+        value={props?.value}
       ></input>
     </div>
   );
