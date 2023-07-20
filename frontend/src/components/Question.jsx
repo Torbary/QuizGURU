@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 function QuestionOption({ id, value, checked, onChange }) {
-
   return (
     <>
       <li>
@@ -29,8 +28,13 @@ function Question({ question, selectedOption, onOptionChange }) {
   return (
     <>
       <form className="">
-        <p className="mt-4 pb-4 text-2xl mx-auto">{question.title}</p>
-        {question.hint ? <p className="text-lg font-sans"><span className="font-bold text-red-500">Hint:</span> {question.hint}</p> : null}
+        <p className="mt-4 pb-4 text-2xl mx-auto">{question.question}</p>
+        {question.hint ? (
+          <p className="text-lg font-sans">
+            <span className="font-bold text-red-500">Hint:</span>{" "}
+            {question.hint}
+          </p>
+        ) : null}
         <ul>
           {question.options.map((value, index) => {
             const optionId = `option_${index}`;
