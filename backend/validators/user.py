@@ -1,6 +1,6 @@
 # from flask_wtf import Form
 from wtforms import StringField, Form
-from wtforms.validators import DataRequired, Length, Regexp
+from wtforms.validators import DataRequired, Length, Regexp, Email
 
 
 class UserForm(Form):
@@ -9,9 +9,7 @@ class UserForm(Form):
     """
 
     email = StringField("Email", validators=[
-        DataRequired(),
-        Regexp(regex=r"^[\w\.-]+@[\w\.-]+\.\w+$"),
-        Length(min=8, max=128)
+        DataRequired(), Email()
     ])
     lastname = StringField("LastName", validators=[
         DataRequired(), Length(min=2, max=128)
@@ -19,6 +17,18 @@ class UserForm(Form):
     firstname = StringField("FirstName", validators=[
         DataRequired(), Length(min=2, max=128)
     ])
+    password = StringField("Password", validators=[
+        DataRequired(), Length(min=8, max=36), Regexp(regex=r'(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,}$')
+    ])
+
+class LoginForm(Form):
+    """
+    represents a form used for validating and processing login data.
+    """
+    email = StringField("Email", validators=[
+        DataRequired(), Email()
+    ])
+
     password = StringField("Password", validators=[
         DataRequired(), Length(min=8, max=36), Regexp(regex=r'(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,}$')
     ])

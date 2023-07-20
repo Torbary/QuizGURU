@@ -56,7 +56,6 @@ def post_question(data: dict, quiz_id):
 
     if storage.get(Quiz, quiz_id) is None:
         # the provided quiz id does not exists.
-        print("the provided quiz id does not exists.")
         return None
     model = Question(**data)
     model.quiz_id = quiz_id
