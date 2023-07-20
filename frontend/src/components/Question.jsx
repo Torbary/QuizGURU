@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+/* eslint-disable react/prop-types */
 import { useQuizStore } from "../store/quiz";
 
 function QuestionOption({ id, value, checked, onChange }) {
@@ -33,20 +33,19 @@ function Question() {
   const onOptionChange = (optionId) => {
     setSelectedOptions(index, optionId);
   };
+  const question = questions[index];
   return (
     <>
       <form className="">
-        <p className="mt-4 pb-4 text-2xl mx-auto">
-          {questions[index].question}
-        </p>
-        {questions[index].hint ? (
+        <p className="mt-4 pb-4 text-2xl mx-auto">{question.question}</p>
+        {question.hint ? (
           <p className="text-lg font-sans">
             <span className="font-bold text-red-500">Hint:</span>{" "}
             {question.hint}
           </p>
         ) : null}
         <ul>
-          {questions[index].options.map((value, _index) => {
+          {question.options.map((value, _index) => {
             const optionId = `option_${_index}`;
             return (
               <QuestionOption

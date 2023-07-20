@@ -5,40 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuizStore } from "../store/quiz";
 import ErrorPage from "./error-page";
 
-// const questions = [
-//   {
-//     title: "Who is considered the first programmer?",
-//     options: [
-//       "Alan Turing",
-//       "Ada Lovelace",
-//       "Charles Babbage",
-//       "Julien Barbier",
-//     ],
-//     correct: 1,
-//     hint: "It was a lady.",
-//     point: 1,
-//   },
-//   {
-//     title: "Which is an interpreted programming language?",
-//     options: ["Ruby", "Python", "C", "Java"],
-//     correct: 1,
-//     point: 1,
-//   },
-//   {
-//     title: "Which of these is an interpreted programming language?",
-//     options: ["C++", "Python", "C", "FORTRAN"],
-//   },
-// ];
-
 export default function Quiz() {
   const params = useParams();
   const navigate = useNavigate();
-  const { index, questions, setQuestions, selectedOptions } = useQuizStore();
+  const { setId, index, questions, setQuestions } = useQuizStore();
   const [valid, setValid] = useState(true);
-
-  React.useEffect(() => {
-    console.log(selectedOptions);
-  }, [selectedOptions]);
 
   React.useEffect(() => {
     const url = `${import.meta.env.VITE_API_URL}/quizzes/${params.quizId}`;
@@ -50,6 +21,7 @@ export default function Quiz() {
 
         if (response.ok) {
           const data = await response.json();
+          setId(params.quizId);
           setQuestions(data.questions);
         } else {
           setValid(false);
@@ -60,6 +32,7 @@ export default function Quiz() {
     };
 
     fetchQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleToggle = (e) => {
