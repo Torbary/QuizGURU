@@ -1,3 +1,4 @@
+from models.quiz import Quiz
 from models import storage
 from models.score import Score
 from models.user import User
@@ -62,8 +63,11 @@ def calculate_score(session: scoped_session, score):
     if not score:
         return None
     answers = score.answers
+    questions = session.query(Quiz).filter(Quiz.id == score.quiz_id).first().questions
     total_score = 0
     expected_score = 0
+    for question in questions:
+        expected_score += question.point
     for answer in answers:
         result = (
             session.query(Question)
@@ -76,7 +80,6 @@ def calculate_score(session: scoped_session, score):
             return None
         if answer.answer == result.correct:
             total_score += result.point
-        expected_score += result.point
 
     score_percent = (total_score * 100) / expected_score
     score_percent = round(score_percent)
