@@ -1,19 +1,22 @@
-from flask import Flask
+from flask import Blueprint, Flask
 from models import storage
 from flask_cors import CORS
-from api.v0.views import app_views
+import api.v0.views as v0
 from waitress import serve
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
+app_view = Blueprint("main_app_blueprint", __name__, url_prefix="/api/")
+app_view.register_blueprint(v0.app_views)
+
 app = Flask(__name__)
 app.secret_key = os.getenv("API_SECRET_KEY")
 app.config["WTF_CSRF_ENABLED"] = False
 app.url_map.strict_slashes = False
-app.register_blueprint(app_views)
-CORS(app)
+app.register_blueprint(app_view)
+CORS(app, supports_credentials=True)
 
 
 @app.teardown_appcontext
